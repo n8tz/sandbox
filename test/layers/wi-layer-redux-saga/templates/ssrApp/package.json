@@ -1,0 +1,74 @@
+{
+  "name": "{% projectName %}",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "main": "./dist/App.server.js",
+  "author": "{%author%}",
+  "wpInherit": {
+    "default": {
+      "rootFolder": "App",
+      "libsPath": "./libs",
+      "vars": {
+        "production": true
+      },
+      "extend": [
+        "wpi-react-rs-sass-ssr"
+      ]
+    },
+    "devClient": {
+      "rootFolder": "App",
+      "basedOn": "default",
+      "libsPath": "./libs",
+      "vars": {
+        "webpackPatch": {
+          "watchOptions": {
+            "aggregateTimeout": 300,
+            "poll": 1000
+          }
+        }
+      },
+      "extend": [
+        "wpi-react-rs-sass-ssr"
+      ]
+    },
+    "api": {
+      "rootFolder": "App",
+      "libsPath": "./libs",
+      "vars": {
+        "externals": true,
+        "webpackPatch": {
+          "devtool": "eval",
+          "watchOptions": {
+            "aggregateTimeout": 300,
+            "poll": 1000
+          }
+        }
+      },
+      "extend": [
+        "wpi-react-rs-sass-ssr"
+      ]
+    }
+  },
+  "scripts": {
+    "build": "wpi&&wpi :api",
+    "dev-api": "wpi :api -w",
+    "docker_ash": "start docker-compose exec app ash -c \"cd /home/app&&ash\"&",
+    "start-dev": "wpi :api&&concurrently \"wpi-dev-server :devClient --hot --host 0.0.0.0 \" \"wpi :api -w\" \"sleep 3&&nodemon -L --watch ./dist/App.server.js --inspect=[::]:9229 ./dist/App.server.js  -p 9701\"",
+    "start": "node ./dist/App.server.js  -p 8080",
+    "runBrowser": "start http://localhost:8080"
+  },
+  "dependencies": {
+    "react-router": "^4.3.1",
+    "react-router-dom": "^4.3.1",
+    "concurrently": "^4.1.0",
+    "nodemon": "^1.18.7",
+    "prop-types": "^15.6.0",
+    "shortid": "^2.2.14",
+    "superagent": "^3.8.2"
+  },
+  "devDependencies": {
+    "wpi-react-redux-sass-ssr": "^{% originPackage.version %}",
+    "webpack-inherit": "^2.0.0"
+  }
+}

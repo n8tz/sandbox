@@ -1,0 +1,8 @@
+{
+  "default": {
+    "rootFolder": "App",
+    "scripts": {
+      "start": "./cli/start"
+    }
+  }
+}
