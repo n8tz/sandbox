@@ -44,7 +44,7 @@ export default ( server ) => {
 	server.get('/', servePage);
 	server.get('/settings', servePage);
 	
-	server.use(express.static(wpiConf.projectRoot + '/dist'));
+	server.use(express.static(wpiConf.projectRoot + '/dist/www'));
 	
 	server.post('/', function ( req, res, next ) {
 		console.log("New state pushed")

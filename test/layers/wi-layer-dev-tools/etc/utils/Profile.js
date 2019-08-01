@@ -15,11 +15,15 @@ function getConfigKey( config, key ) {
 };
 
 module.exports = function Profile( profileId ) {
-	let config   = wpi.getConfig(profileId),
-	    commands = getConfigKey(config, "commands"),
-	    logs     = {},
-	    watchers = {},
-	    running  = {};
+	let config     = wpi.getConfig(profileId),
+	    commands   = getConfigKey(config, "commands"),
+	    logs       = {},
+	    watchers   = {},
+	    killing    = {},
+	    running    = {},
+	    runAfter   = {},
+	    onComplete = [],
+	    nbCmd      = 0;
 	return {
 		raw: config,
 		start() {
@@ -31,6 +35,9 @@ module.exports = function Profile( profileId ) {
 					logs[cmdId] = logs[cmdId] || { stdout: "", stderr: "" };
 					this.run(cmdId)
 				}
+		},
+		onComplete( cb ) {
+			onComplete.push(cb);
 		},
 		cmdLog( cmdId, text ) {
 			logs[cmdId].stdout += text + "\n";
@@ -50,58 +57,85 @@ module.exports = function Profile( profileId ) {
 			    task = commands[cmdId];
 			//this.cmdLog(cmdId, 'Killing ' + ':' + profileId + '::' + cmdId);
 			console.warn("Killing " + ':' + profileId + '::' + cmdId);
-			
+			killing[cmdId] = true;
 			return cmd && fkill(cmd.pid, { tree: true, force: true, silent: true })
 				.then(
 					logs => {
 						running[cmdId] = null;
+						killing[cmdId] = false;
 					}
 				)
 		},
-		run( cmdId, cleared, watched ) {
+		run( cmdId, cleared, watched, waitDone ) {
 			let cmd  = running[cmdId],
 			    task = commands[cmdId];
 			
 			if ( cmd ) {
-				return this.kill(cmdId).then(e => this.run(cmdId));
+				return this.kill(cmdId).then(e => this.run(cmdId, cleared, watched, waitDone));
 			}
 			
 			if ( !cleared && task.clearBefore ) {
 				console.warn("Clear before ", task.clearBefore);
-				return rimraf(task.clearBefore, ( err, val ) => this.run(cmdId, true));
+				return rimraf(task.clearBefore, ( err, val ) => this.run(cmdId, true, watched, waitDone));
 			}
 			
+			nbCmd++;
+			if ( !waitDone && task.wait ) {
+				runAfter[task.wait] = runAfter[task.wait] || [];
+				runAfter[task.wait].push(cmdId);
+				return;
+			}
 			if ( !watched && task.watch ) {
 				watchers[cmdId] && watchers[cmdId].close();
-				return watchers[cmdId] = chokidar
-					.watch(task.watch, { ignored: /(^|[\/\\])\../ })
+				watchers[cmdId] = chokidar
+					.watch(task.watch, {})
 					.on('all', ( event, path ) => {
 						if ( event === 'add' ) {
 							console.warn(cmdId + ": '" + task.watch + "' has been updated restarting...");
-							this.run(cmdId, true, true);
+							this.run(cmdId, true, true, waitDone);
 						}
 					});
-				
+				try {
+					if ( !fs.existsSync(task.watch) ) {
+						return console.warn(cmdId + ": '" + task.watch + "' waiting...");
+						;
+					}
+				} catch ( e ) {
+					console.warn(cmdId + ": '" + task.watch + "' : waiting...");
+				}
 			}
 			this.cmdLog(cmdId, 'Starting ' + ':' + profileId + '::' + cmdId);
-			
 			running[cmdId] = cmd = exec(
 				task.run,
 				{
 					stdio: 'inherit',
 					env  : {
 						...process.env,
-						'__WPI_VARS_OVERRIDE__': task.vars && JSON.stringify(task.vars),
-						'__WPI_PROFILE__'      : undefined
+						'__WPI_PROFILE__': undefined,
+						...(task.vars && { '__WPI_VARS_OVERRIDE__': JSON.stringify(task.vars) })
 					}
 				},
 				( err ) => {
-					console.warn(cmdId + ": '" + task.watch + "' has been killed ...");
+					//err && console.warn(err);
 					
-					this.cmdLog(cmdId, "Process ended");
-					if ( running[cmdId] && task.forever ) {
-						console.warn(cmdId + ": '" + task.watch + "' restart ...");
+					//this.cmdLog(cmdId, cmdId + ": '" + task.run + "' ended ...");
+					err && this.cmdErr(cmdId, cmdId + ": '" + task.run + "' ended with error : " + err);
+					if ( !killing[cmdId] && task.forever ) {
+						console.warn(cmdId + "' restart ...");
 						setTimeout(tm => this.run(cmdId, true, true), 1000);
+					}
+					else {// normal exit
+						watchers[cmdId] && watchers[cmdId].close();
+						
+						if ( runAfter[cmdId] ) {
+							while ( runAfter[cmdId].length )
+								this.run(runAfter[cmdId].shift(), false, false, true);
+						}
+						
+						nbCmd--;
+						if ( !killing[cmdId] && nbCmd === 0 )
+							while ( onComplete.length )
+								onComplete.shift()();
 					}
 					running[cmdId] = null;
 				}

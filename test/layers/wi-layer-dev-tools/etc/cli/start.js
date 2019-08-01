@@ -30,6 +30,7 @@ let port = program.port || 9090,
 let profile = new Profile(profileId);
 
 profile.start();
+profile.onComplete(e => process.exit());
 
 server.use(express.json());       // to support JSON-encoded bodies
 server.use(express.urlencoded()); // to support URL-encoded bodies
@@ -55,10 +56,17 @@ server.use(
 	"/switch",
 	( req, res ) => {
 		res.header("Access-Control-Allow-Origin", "*");
-		//command = null;
-		//mode    = req.query.targetMode || mode;
-		//runByMode();
-		res.json({ success: !!req.query.targetMode, mode })
+		profileId = req.query.to || "prod";
+		console.log(':::59: ', profileId);
+		profile.stop().then(
+			e => {
+				profile = new Profile(profileId);
+				profile.start();
+				res.json({ success: true, profileId })
+			}
+		);
+		
+		
 	}
 );
 
