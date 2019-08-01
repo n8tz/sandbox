@@ -41,6 +41,8 @@
   },
   "devDependencies": {
     "webpack-inherit": "^1.6.6",
-    "wi-layer-redux-thunk": "file:layers/wi-layer-redux-thunk"
+    "wi-layer-redux-thunk": "file:layers/wi-layer-redux-thunk",
+    "wi-layer-react-express": "file:layers/wi-layer-react-express",
+    "wi-layer-dev-tools": "file:layers/wi-layer-dev-tools"
   }
 }

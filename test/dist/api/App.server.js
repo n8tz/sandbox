@@ -1,5 +1,5 @@
 /** wi externals **/
-require('webpack-inherit/etc/node/loadModulePaths.js').loadPaths({allModulePath:["layers","node_modules","layers\\wi-layer-react-express\\node_modules"],cDir:__dirname+'/..\..'},"dist\\api");/** /wi externals **/
+require('webpack-inherit/etc/node/loadModulePaths.js').loadPaths({allModulePath:["layers","node_modules"],cDir:__dirname+'/..\..'},"dist\\api");/** /wi externals **/
 
 module.exports =
 /******/ (function(modules) { // webpackBootstrap
@@ -94,10 +94,10 @@ module.exports =
 /*!*****************************!*\
   !*** ./App/.wpiConfig.json ***!
   \*****************************/
-/*! exports provided: project, projectRoot, vars, allCfg, allModId, default */
+/*! exports provided: project, buildDate, profile, projectRoot, vars, allCfg, allModId, default */
 /***/ (function(module) {
 
-module.exports = JSON.parse("{\"project\":{\"name\":\"widget-desk\",\"author\":\"Nathan Braun <n8tz.js@gmail.com>\",\"version\":\"1.0.0\"},\"projectRoot\":\"G:\\\\n8tz\\\\wiLayers\\\\test\",\"vars\":{\"rootAlias\":\"App\",\"targetDir\":\"dist/api\",\"DefinePluginCfg\":{\"__IS_DEV__\":true,\"__IS_SERVER__\":true},\"externals\":true},\"allCfg\":[{\"basedOn\":\"defaultServer\",\"rootFolder\":\"App\",\"libsPath\":\"./layers\",\"vars\":{\"targetDir\":\"dist/api\",\"DefinePluginCfg\":{\"__IS_DEV__\":true,\"__IS_SERVER__\":true},\"externals\":true},\"extend\":[\"widget-management\",\"wi-layer-redux-thunk\"]},{\"rootFolder\":\"App\",\"vars\":{},\"extend\":[]},{\"rootFolder\":\"App\",\"extend\":[\"wi-layer-react-express\"]},{\"rootFolder\":\"App\",\"config\":\"./etc/wp/webpack.config.api.js\",\"extend\":[]}],\"allModId\":[\"widget-management\",\"wi-layer-redux-thunk\",\"wi-layer-react-express\"]}");
+module.exports = JSON.parse("{\"project\":{\"name\":\"widget-desk\",\"author\":\"Nathan Braun <n8tz.js@gmail.com>\",\"version\":\"1.0.0\"},\"buildDate\":1564671416579,\"profile\":\"api\",\"projectRoot\":\"G:\\\\n8tz\\\\sandbox\\\\test\",\"vars\":{\"rootAlias\":\"App\",\"targetDir\":\"dist/api\",\"DefinePluginCfg\":{\"__IS_DEV__\":true,\"__IS_SERVER__\":true},\"production\":false,\"externals\":true},\"allCfg\":[{\"basedOn\":\"defaultServer\",\"rootFolder\":\"App\",\"libsPath\":\"./layers\",\"vars\":{\"targetDir\":\"dist/api\",\"DefinePluginCfg\":{\"__IS_DEV__\":false,\"__IS_SERVER__\":true}},\"extend\":[\"widget-management\",\"wi-layer-redux-thunk\",\"wi-layer-react-express\"]},{\"rootFolder\":\"App\",\"vars\":{},\"extend\":[]},{\"rootFolder\":\"App\",\"extend\":[]},{\"rootFolder\":\"App\",\"config\":\"./etc/wp/webpack.config.api.js\",\"extend\":[]}],\"allModId\":[\"widget-management\",\"wi-layer-redux-thunk\",\"wi-layer-react-express\"]}");
 
 /***/ }),
 

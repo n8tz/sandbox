@@ -69,7 +69,7 @@ module.exports = [
 						                            preset: ['default', { discardComments: { removeAll: true } }],
 					                            },
 					                            canPrint                 : true
-				                            })],
+				                            })] || [],
 			splitChunks: {
 				cacheGroups: {
 					default: false,

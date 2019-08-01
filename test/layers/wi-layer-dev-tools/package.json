@@ -6,9 +6,9 @@
   "author": "Nathan Braun <n8tz.js@gmail.com>",
   "dependencies": {
     "is": "^3.3.0",
+    "fkill": "^6.2.0",
     "superagent": "^3.8.2"
   },
   "devDependencies": {
-    "webpack-inherit": "^1.6.3"
   }
 }

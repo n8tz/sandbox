@@ -2,7 +2,7 @@
   "default": {
     "rootFolder": "App",
     "extend": [
-      "wi-layer-react-express"
+//      "wi-layer-react-express"
     ]
   }
 }

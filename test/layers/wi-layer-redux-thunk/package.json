@@ -15,7 +15,6 @@
     "redux": "^4.0.1",
     "redux-devtools-extension": "^2.13.7",
     "redux-thunk": "^2.3.0",
-    "webpack-inherit": "^1.5.11",
-    "wi-layer-react-express": "file:../wi-layer-react-express"
+    "webpack-inherit": "^1.5.11"
   }
 }

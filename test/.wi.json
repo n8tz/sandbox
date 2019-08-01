@@ -1,4 +1,45 @@
 {
+  "default": {
+    "rootFolder": "App"
+  },
+  "dev": {
+    "rootFolder": "App",
+    "libsPath": "./layers",
+    "commands": {
+      "api": {
+        "run": "wpi :api -w",
+        "vars": {
+          "DefinePluginCfg": {
+            "__IS_DEV__": true,
+            "__IS_SERVER__": true
+          },
+          "production": false,
+          "externals": true
+        }
+      },
+      "server": {
+        "clearBefore": "dist/api",
+        "watch": "dist/api/App.server.js",
+        "run": "node --inspect=[::]:9229 ./dist/api/App.server.js -p 9701 || sleep 3s",
+        "forever": true
+      },
+      "www": {
+        "clearBefore": "dist/www",
+        "run": "wpi-dev-server :www --hot --host 0.0.0.0",
+        "vars": {
+          "DefinePluginCfg": {
+            "__IS_DEV__": true,
+            "__IS_SERVER__": false
+          },
+          "extractCss": false,
+          "production": false
+        }
+      }
+    },
+    "extend": [
+      "wi-layer-dev-tools"
+    ]
+  },
   "www": {
     "basedOn": "defaultBrowser",
     "rootFolder": "App",
@@ -12,12 +53,12 @@
         "__IS_SERVER__": false
       },
       "webpackPatch": {
-        "mode": "production"
       }
     },
     "extend": [
       "widget-management",
-      "wi-layer-redux-thunk"
+      "wi-layer-redux-thunk",
+      "wi-layer-react-express"
     ]
   },
   "api": {
@@ -33,7 +74,8 @@
     },
     "extend": [
       "widget-management",
-      "wi-layer-redux-thunk"
+      "wi-layer-redux-thunk",
+      "wi-layer-react-express"
     ]
   },
   "dev_www": {
@@ -51,7 +93,8 @@
     },
     "extend": [
       "widget-management",
-      "wi-layer-redux-thunk"
+      "wi-layer-redux-thunk",
+      "wi-layer-react-express"
     ]
   },
   "dev_api": {
@@ -68,7 +111,8 @@
     },
     "extend": [
       "widget-management",
-      "wi-layer-redux-thunk"
+      "wi-layer-redux-thunk",
+      "wi-layer-react-express"
     ]
   }
 }
