@@ -21,7 +21,7 @@ if ( argz[0] && /^\:.*$/.test(argz[0]) )
 	profileId = argz.shift().replace(/^\:(.*)$/, '$1');
 
 program
-	.option('-p, --port [port=9090]', 'Docker control')
+	.option('-p, --port [port=9090]', 'Build control')
 	.parse(process.argv);
 
 let port = program.port || 9090,
@@ -30,7 +30,6 @@ let port = program.port || 9090,
 let profile = new Profile(profileId);
 
 profile.start();
-
 
 server.use(express.json());       // to support JSON-encoded bodies
 server.use(express.urlencoded()); // to support URL-encoded bodies

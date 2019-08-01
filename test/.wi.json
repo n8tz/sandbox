@@ -20,7 +20,13 @@
       "server": {
         "clearBefore": "dist/api",
         "watch": "dist/api/App.server.js",
-        "run": "node --inspect=[::]:9229 ./dist/api/App.server.js -p 9701 || sleep 3s",
+        "run": "node",
+        "argz": [
+          "--inspect=[::]:9229",
+          "./dist/api/App.server.js",
+          "-p",
+          "9701"
+        ],
         "forever": true
       },
       "www": {
@@ -71,43 +77,6 @@
         "__IS_DEV__": false,
         "__IS_SERVER__": true
       }
-    },
-    "extend": [
-      "widget-management",
-      "wi-layer-redux-thunk",
-      "wi-layer-react-express"
-    ]
-  },
-  "dev_www": {
-    "basedOn": "defaultBrowser",
-    "rootFolder": "App",
-    "libsPath": "./layers",
-    "vars": {
-      "targetDir": "dist/www",
-      "DefinePluginCfg": {
-        "__IS_DEV__": true,
-        "__IS_SERVER__": false
-      },
-      "webpackPatch": {
-      }
-    },
-    "extend": [
-      "widget-management",
-      "wi-layer-redux-thunk",
-      "wi-layer-react-express"
-    ]
-  },
-  "dev_api": {
-    "basedOn": "defaultServer",
-    "rootFolder": "App",
-    "libsPath": "./layers",
-    "vars": {
-      "targetDir": "dist/api",
-      "DefinePluginCfg": {
-        "__IS_DEV__": true,
-        "__IS_SERVER__": true
-      },
-      "externals": true
     },
     "extend": [
       "widget-management",

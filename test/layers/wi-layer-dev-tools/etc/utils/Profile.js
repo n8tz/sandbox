@@ -8,7 +8,6 @@ const wpi      = require('webpack-inherit'),
       chokidar = require('chokidar'),
       exec     = require('child_process').exec;
 
-
 function getConfigKey( config, key ) {
 	for ( let i = 0; i < config.allCfg.length; i++ )
 		if ( config.allCfg[i][key] )
@@ -34,8 +33,8 @@ module.exports = function Profile( profileId ) {
 				}
 		},
 		cmdLog( cmdId, text ) {
-			logs[cmdId].stdout += text + "\n\r";
-			process.stdout.write(text);
+			logs[cmdId].stdout += text + "\n";
+			process.stdout.write(text + "\n");
 		},
 		cmdErr( cmdId, text ) {
 			text = "\x1b[31m" + text + "\x1b[0m\n";
@@ -49,10 +48,8 @@ module.exports = function Profile( profileId ) {
 		kill( cmdId ) {
 			let cmd  = running[cmdId],
 			    task = commands[cmdId];
-			this.cmdLog(cmdId, 'Killing ' + ':' + profileId + '::' + cmdId);
-			cmd && console.warn("Kill ", cmd.pid);
-			
-			cmd && cmd.kill('SIGINT');
+			//this.cmdLog(cmdId, 'Killing ' + ':' + profileId + '::' + cmdId);
+			console.warn("Killing " + ':' + profileId + '::' + cmdId);
 			
 			return cmd && fkill(cmd.pid, { tree: true, force: true, silent: true })
 				.then(
@@ -88,7 +85,7 @@ module.exports = function Profile( profileId ) {
 			}
 			this.cmdLog(cmdId, 'Starting ' + ':' + profileId + '::' + cmdId);
 			
-			cmd = exec(
+			running[cmdId] = cmd = exec(
 				task.run,
 				{
 					stdio: 'inherit',
@@ -99,7 +96,14 @@ module.exports = function Profile( profileId ) {
 					}
 				},
 				( err ) => {
-					this.cmdLog(cmdId, "Process ended")
+					console.warn(cmdId + ": '" + task.watch + "' has been killed ...");
+					
+					this.cmdLog(cmdId, "Process ended");
+					if ( running[cmdId] && task.forever ) {
+						console.warn(cmdId + ": '" + task.watch + "' restart ...");
+						setTimeout(tm => this.run(cmdId, true, true), 1000);
+					}
+					running[cmdId] = null;
 				}
 			);
 			
