@@ -8,9 +8,8 @@
   "scripts": {
     "test": "mocha --compilers js:@babel/register ./tests/*.test.jsx -b",
     "build": "wpi :www&&wpi :api",
-    "dev-api": "wpi :api -w",
-    "start-dev": "wpi :dev_api&&concurrently \"wpi-dev-server :dev_www --hot --host 0.0.0.0\" \"wpi :dev_api -w\" \"sleep 3&&nodemon --watch ./dist/api/App.server.js --inspect=[::]:9229 ./dist/api/App.server.js  -p 9701\"",
-    "start": "node ./dist/api/App.server.js  -p 8080",
+    "start-dev": "wi-run :dev start",
+    "start": "wi-run :prod start",
     "runBrowser": "start http://localhost:8080"
   },
   "dependencies": {

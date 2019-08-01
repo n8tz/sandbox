@@ -1,8 +1,5 @@
 const wpi      = require('webpack-inherit'),
-      program  = require('commander'),
-      express  = require("express"),
       fs       = require('fs'),
-      path     = require('path'),
       fkill    = require('fkill'),
       rimraf   = require('rimraf'),
       chokidar = require('chokidar'),
@@ -23,7 +20,17 @@ module.exports = function Profile( profileId ) {
 	    running    = {},
 	    runAfter   = {},
 	    onComplete = [],
+	    defered    = [],
 	    nbCmd      = 0;
+	
+	function doDefer( fn, tm ) {
+		let id;
+		defered.push(id = setTimeout(tm => {
+			defered = defered.filter(tmId => (tmId !== id));
+			fn();
+		}, tm))
+	}
+	
 	return {
 		raw: config,
 		start() {
@@ -50,6 +57,9 @@ module.exports = function Profile( profileId ) {
 			process.stdout.write(text);
 		},
 		stop() {
+			while ( defered.length )
+				clearTimeout(defered.shift());
+			
 			return Promise.all(Object.keys(commands).map(id => this.kill(id)));
 		},
 		kill( cmdId ) {
@@ -87,21 +97,21 @@ module.exports = function Profile( profileId ) {
 			}
 			if ( !watched && task.watch ) {
 				watchers[cmdId] && watchers[cmdId].close();
-				watchers[cmdId] = chokidar
-					.watch(task.watch, {})
-					.on('all', ( event, path ) => {
-						if ( event === 'add' ) {
-							console.warn(cmdId + ": '" + task.watch + "' has been updated restarting...");
-							this.run(cmdId, true, true, waitDone);
-						}
-					});
+				
 				try {
-					if ( !fs.existsSync(task.watch) ) {
-						return console.warn(cmdId + ": '" + task.watch + "' waiting...");
-						;
-					}
+					if ( !fs.existsSync(task.watch) )
+						return doDefer(tm => this.run(cmdId, true, false, true), 3000);
+					watchers[cmdId] = chokidar
+						.watch(task.watch, { ignored: /(^|[\/\\])\../ })
+						.on('all', ( event, path ) => {
+							if ( event === 'add' ) {
+								console.warn(cmdId + ": '" + task.watch + "' has been updated restarting...");
+								this.run(cmdId, true, true, true);
+							}
+						});
+					console.warn(cmdId + ": '" + task.watch + "' waiting updates...");
 				} catch ( e ) {
-					console.warn(cmdId + ": '" + task.watch + "' : waiting...");
+					return doDefer(tm => this.run(cmdId, true, false, true), 1000);
 				}
 			}
 			this.cmdLog(cmdId, 'Starting ' + ':' + profileId + '::' + cmdId);
@@ -122,7 +132,7 @@ module.exports = function Profile( profileId ) {
 					err && this.cmdErr(cmdId, cmdId + ": '" + task.run + "' ended with error : " + err);
 					if ( !killing[cmdId] && task.forever ) {
 						console.warn(cmdId + "' restart ...");
-						setTimeout(tm => this.run(cmdId, true, true), 1000);
+						doDefer(tm => this.run(cmdId, true, true, true), 1000);
 					}
 					else {// normal exit
 						watchers[cmdId] && watchers[cmdId].close();

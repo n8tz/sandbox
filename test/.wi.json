@@ -6,7 +6,13 @@
     "rootFolder": "App",
     "libsPath": "./layers",
     "commands": {
+      "server": {
+        "watch": "dist/api/App.server.js",
+        "run": "node --inspect=[::]:9229 ./dist/api/App.server.js -p 9701",
+        "forever": true
+      },
       "api": {
+        "clearBefore": "dist/api",
         "run": "wpi :api -w",
         "vars": {
           "DefinePluginCfg": {
@@ -15,12 +21,6 @@
           },
           "production": false
         }
-      },
-      "server": {
-        "clearBefore": "dist/api",
-        "watch": "dist/api/App.server.js",
-        "run": "node --inspect=[::]:9229 ./dist/api/App.server.js -p 9701",
-        "forever": true
       },
       "www": {
         "clearBefore": "dist/www",

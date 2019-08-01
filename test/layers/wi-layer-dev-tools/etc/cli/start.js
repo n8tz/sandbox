@@ -2,18 +2,13 @@
 
 'use strict';
 
-const program  = require('commander'),
-      express  = require("express"),
-      server   = express(),
-      http     = require('http').Server(server),
-      fs       = require('fs'),
-      path     = require('path'),
-      fkill    = require('fkill'),
-      rimraf   = require('rimraf'),
-      chokidar = require('chokidar'),
-      exec     = require('child_process').exec,
-      argz     = process.argv.slice(2),
-      Profile  = require('../utils/Profile');
+const program = require('commander'),
+      express = require("express"),
+      server  = express(),
+      http    = require('http').Server(server),
+      exec    = require('child_process').exec,
+      argz    = process.argv.slice(2),
+      Profile = require('../utils/Profile');
 
 let profileId = process.env.__WPI_PROFILE__ || "default";
 
