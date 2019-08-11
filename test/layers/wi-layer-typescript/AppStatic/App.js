@@ -23,27 +23,30 @@
  *   @author : Nathanael Braun
  *   @contact : n8tz.js@gmail.com
  */
-import config from "./config";
-import React  from "react";
-import api    from "./api";
 
-const express = require("express"),
-      server  = express(),
-      http    = require('http').Server(server),
-      argz    = require('minimist')(process.argv.slice(2)),
-      debug   = require('./console').default("server");
+import React    from 'react';
+import {Helmet} from "react-helmet";
 
-process.title = config.project.name + '::server';
+class App extends React.Component {
+	
+	render() {
+		return <React.Fragment>
+			<Helmet>
+				<meta charSet="utf-8"/>
+				<title>wi-layer-react-express boilerplate v1.0</title>
+			</Helmet>
+			<h1>wi-layer-react-express boilerplate v1.0</h1>
+			<h2>Included ( among others ) : </h2>
+			<ul>
+				<li>react ^16.8.6</li>
+				<li>express with minimal SSR</li>
+				<li>sass</li>
+				<li>es6 + decorators</li>
+				<li>hot reload with dev server, SSR & api proxying</li>
+				<li>react-helmet ( html header manager )</li>
+			</ul>
+		</React.Fragment>
+	}
+}
 
-debug.warn("process.env.DEBUG : ", process.env.DEBUG);
-server.use(express.json());       // to support JSON-encoded bodies
-server.use(express.urlencoded()); // to support URL-encoded bodies
-
-api(server, http);
-
-var server_instance = http.listen(parseInt(argz.p || argz.port || 8000), function () {
-	debug.info('Running on ', server_instance.address().port)
-});
-
-
-
+export default App

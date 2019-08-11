@@ -23,27 +23,33 @@
  *   @author : Nathanael Braun
  *   @contact : n8tz.js@gmail.com
  */
-import config from "./config";
-import React  from "react";
-import api    from "./api";
 
-const express = require("express"),
-      server  = express(),
-      http    = require('http').Server(server),
-      argz    = require('minimist')(process.argv.slice(2)),
-      debug   = require('./console').default("server");
+import React from 'react';
 
-process.title = config.project.name + '::server';
-
-debug.warn("process.env.DEBUG : ", process.env.DEBUG);
-server.use(express.json());       // to support JSON-encoded bodies
-server.use(express.urlencoded()); // to support URL-encoded bodies
-
-api(server, http);
-
-var server_instance = http.listen(parseInt(argz.p || argz.port || 8000), function () {
-	debug.info('Running on ', server_instance.address().port)
-});
-
-
-
+export default class index extends React.Component {
+	render() {
+		const { helmet, content, state } = this.props,
+		      htmlAttrs                  = helmet.htmlAttributes.toComponent(),
+		      bodyAttrs                  = helmet.bodyAttributes.toComponent();
+		return <React.Fragment>
+			<html {...htmlAttrs}>
+			<head>
+				{helmet.title.toComponent()}
+				{helmet.meta.toComponent()}
+				{helmet.link.toComponent()}
+				{
+					state &&
+					<script dangerouslySetInnerHTML={{ __html: "window.__STATE__  = " + (JSON.stringify(state)) }}/>
+				}
+			</head>
+			<body {...bodyAttrs}>
+			<div id="app" dangerouslySetInnerHTML={{ __html: content }}>
+			</div>
+			
+			<script src="./App.js"></script>
+			<script src="./App.vendors.js"></script>
+			</body>
+			</html>
+		</React.Fragment>
+	}
+}

@@ -23,27 +23,27 @@
  *   @author : Nathanael Braun
  *   @contact : n8tz.js@gmail.com
  */
-import config from "./config";
-import React  from "react";
-import api    from "./api";
-
-const express = require("express"),
-      server  = express(),
-      http    = require('http').Server(server),
-      argz    = require('minimist')(process.argv.slice(2)),
-      debug   = require('./console').default("server");
-
-process.title = config.project.name + '::server';
-
-debug.warn("process.env.DEBUG : ", process.env.DEBUG);
-server.use(express.json());       // to support JSON-encoded bodies
-server.use(express.urlencoded()); // to support URL-encoded bodies
-
-api(server, http);
-
-var server_instance = http.listen(parseInt(argz.p || argz.port || 8000), function () {
-	debug.info('Running on ', server_instance.address().port)
-});
 
 
+import express from "express";
+import config  from "../config";
+import App     from "../index.js";
 
+export const name          = "Rendering service";
+export const priorityLevel = 100000;
+export const service       = ( server ) => {
+	server.get(
+		'/',
+		function ( req, res, next ) {
+			App.renderSSR(
+				{
+					url: req.url
+				},
+				( err, html, nstate ) => {
+					res.send(200, html)
+				}
+			)
+		}
+	);
+	server.use(express.static(config.projectRoot + '/dist/www'));
+};

@@ -23,27 +23,34 @@
  *   @author : Nathanael Braun
  *   @contact : n8tz.js@gmail.com
  */
-import config from "./config";
-import React  from "react";
-import api    from "./api";
 
-const express = require("express"),
-      server  = express(),
-      http    = require('http').Server(server),
-      argz    = require('minimist')(process.argv.slice(2)),
-      debug   = require('./console').default("server");
+import is  from 'is';
+import api from './api/(*).js';
 
-process.title = config.project.name + '::server';
+let debug = require('./console').default("server");
 
-debug.warn("process.env.DEBUG : ", process.env.DEBUG);
-server.use(express.json());       // to support JSON-encoded bodies
-server.use(express.urlencoded()); // to support URL-encoded bodies
-
-api(server, http);
-
-var server_instance = http.listen(parseInt(argz.p || argz.port || 8000), function () {
-	debug.info('Running on ', server_instance.address().port)
-});
-
-
-
+export default ( server, http ) => Object
+	.keys(api)
+	.map(
+		( service ) => (
+			is.fn(api[service]) ?
+			{
+				name         : service,
+				priorityLevel: 0,
+				service      : api[service]
+			} : api[service]
+		)
+	)
+	.sort(
+		( a, b ) => (a.priorityLevel > b.priorityLevel ? -1 : 1)
+	)
+	.forEach(
+		( service ) => {
+			try {
+				debug.info("Load Api : ", service.name, "\n")
+				
+				service.service(server, http);
+			} catch ( e ) {
+				debug.error("Api fail loading service ", service.name, "\n", e)
+			}
+		})

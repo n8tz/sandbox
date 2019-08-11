@@ -11,8 +11,5 @@
  *  @author : Nathanael Braun
  *  @contact : n8tz.js@gmail.com
  */
-import App      from "./index"
 
-
-App.renderTo(document.getElementById('app'), window.__STATE__);
-
+export default require('./.wpiConfig.json');
