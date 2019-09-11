@@ -1,0 +1,21 @@
+{
+  "default": {
+    "rootFolder": "App"
+  },
+  "www": {
+    "rootFolder": "App",
+    "basedOn": "static",
+    "entryPoint": "App/index.tsx",
+    "vars": {
+      "webpackPatch": {
+        "watchOptions": {
+          "aggregateTimeout": 300,
+          "poll": 1000
+        }
+      }
+    },
+    "extend": [
+      "wi-layer-react-express"
+    ]
+  }
+}
